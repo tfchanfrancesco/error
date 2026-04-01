@@ -1,4 +1,7 @@
 # 示例：在 OpenShift 中为 Spring Boot Actuator 配置 liveness / readiness
+#
+# startupProbe：非强制。Spring Boot/JVM 启动慢时建议保留，避免未就绪就被 liveness 杀掉。
+# 若删掉 startupProbe，请把 liveness 的 initialDelaySeconds 调大（如 60～120）。
 # 请根据实际镜像、端口、项目名称修改 metadata 与 image
 apiVersion: apps/v1
 kind: Deployment
@@ -24,11 +27,20 @@ spec:
             # 可选：启用后，调用 /api/probe/** 需带请求头 X-Probe-Control-Token: <值>
             - name: PROBE_CONTROL_TOKEN
               value: ""
+          # failureThreshold * periodSeconds ≈ 启动最大宽限（示例 30*10s = 300s）
+          startupProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: http
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 30
           livenessProbe:
             httpGet:
               path: /actuator/health/liveness
               port: http
-            initialDelaySeconds: 30
+            # 有 startupProbe 时，存活检查可略缩短首次延迟
+            initialDelaySeconds: 10
             periodSeconds: 10
             timeoutSeconds: 3
             failureThreshold: 3
