@@ -1,0 +1,7 @@
+.git
+.idea
+*.iml
+**/.DS_Store
+
+# 多阶段构建在镜像内执行 Maven；排除本机 target 避免误拷进上下文
+target/

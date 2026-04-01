@@ -1,0 +1,12 @@
+# 需先在主机执行: mvn -DskipTests package
+# docker build -f Dockerfile.prebuilt -t error-app:local .
+FROM eclipse-temurin:25-jre
+
+ARG JAR_FILE=target/error-0.0.1-SNAPSHOT.jar
+
+WORKDIR /app
+COPY ${JAR_FILE} app.jar
+
+EXPOSE 8080
+
+ENTRYPOINT ["java", "-jar", "/app/app.jar"]

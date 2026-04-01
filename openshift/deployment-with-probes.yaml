@@ -1,0 +1,42 @@
+# 示例：在 OpenShift 中为 Spring Boot Actuator 配置 liveness / readiness
+# 请根据实际镜像、端口、项目名称修改 metadata 与 image
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: error-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: error-app
+  template:
+    metadata:
+      labels:
+        app: error-app
+    spec:
+      containers:
+        - name: app
+          image: image-registry.openshift-image-registry.svc:5000/your-namespace/error-app:latest
+          ports:
+            - containerPort: 8080
+              name: http
+          env:
+            # 可选：启用后，调用 /api/probe/** 需带请求头 X-Probe-Control-Token: <值>
+            - name: PROBE_CONTROL_TOKEN
+              value: ""
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 3
