@@ -4,12 +4,10 @@ import hk.edu.polyu.cpce.error.dto.CreateUserRequest;
 import hk.edu.polyu.cpce.error.exception.BusinessViolationException;
 import hk.edu.polyu.cpce.error.exception.ExceptionDefinition;
 import hk.edu.polyu.cpce.error.exception.ResourceNotFoundException;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
 
-@Slf4j
 @Service
 public class UserService {
 
